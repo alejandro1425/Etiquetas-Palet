@@ -8,6 +8,7 @@ public class Product {
     private int unitsPerBox;
     private double weightPerUnitKg;
     private String ean13;
+    private boolean variableWeight; // true = (02), false = (01)
 
     public Product() {
     }
@@ -61,5 +62,21 @@ public class Product {
     @Override
     public String toString() {
         return name;
+    }
+
+    // Peso fijo/variable
+    // Se persiste como "variable_weight" en products.json
+    @JsonProperty("variable_weight")
+    public boolean isVariableWeight() {
+        return variableWeight;
+    }
+
+    @JsonProperty("variable_weight")
+    public void setVariableWeight(boolean variableWeight) {
+        this.variableWeight = variableWeight;
+    }
+
+    public String getGtinAi() {
+        return variableWeight ? "02" : "01";
     }
 }

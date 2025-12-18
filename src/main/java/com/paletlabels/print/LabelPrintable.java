@@ -33,6 +33,40 @@ public class LabelPrintable implements Printable {
         this.barcode = barcode;
     }
 
+    //Wrapper de texto
+    private float drawWrappedText(
+        Graphics2D g2d,
+        String text,
+        float x,
+        float y,
+        double maxWidth,
+        float lineHeight
+) {
+    FontMetrics fm = g2d.getFontMetrics();
+    String[] words = text.split(" ");
+    StringBuilder line = new StringBuilder();
+
+    for (String word : words) {
+        String testLine = line + word + " ";
+        double testWidth = fm.stringWidth(testLine);
+
+        if (testWidth > maxWidth && line.length() > 0) {
+            g2d.drawString(line.toString(), x, y);
+            y += lineHeight;
+            line = new StringBuilder(word).append(" ");
+        } else {
+            line.append(word).append(" ");
+        }
+    }
+
+    if (line.length() > 0) {
+        g2d.drawString(line.toString(), x, y);
+        y += lineHeight;
+    }
+
+    return y;
+    }
+
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
         if (pageIndex > 0) {
@@ -41,6 +75,7 @@ public class LabelPrintable implements Printable {
         Graphics2D g2d = (Graphics2D) graphics;
         g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());               
         g2d.setPaint(Color.BLACK);
+        double printableWidth = pageFormat.getImageableWidth();         //Ancho útil (restando márgenes)
 
         float y = 15;
         
@@ -58,10 +93,24 @@ public class LabelPrintable implements Printable {
         g2d.drawString("PESO NETO PALET: " + weightFormat.format(netWeight) + " kg", 0, y);
         y += 35;
 
-        //NOMBRE DE PRODUCTO
-        g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 18f));
-        g2d.drawString(product.getName(), 0, y);
-        y += 35;
+        // NOMBRE DE PRODUCTO
+        Font productFont = g2d.getFont().deriveFont(Font.BOLD, 18f);
+        g2d.setFont(productFont);
+
+        FontMetrics fm = g2d.getFontMetrics();
+        int lineHeight = fm.getHeight();
+
+        y = drawWrappedText(
+            g2d,
+            product.getName(),
+            0,
+            y,
+            printableWidth,
+            lineHeight
+        );
+
+        //y += 10; // separación extra
+
 
         /*if (barcode != null) {            //Genera a tamaño real, no entra en A5
             int x = 10;
@@ -71,7 +120,7 @@ public class LabelPrintable implements Printable {
 
         //Generación img GS1 con centrado y ajustado a ancho de página
         if (barcode != null) {
-            double printableWidth = pageFormat.getImageableWidth();         //Ancho útil (restando márgenes)
+            //double printableWidth = pageFormat.getImageableWidth();         //Ancho útil (restando márgenes)
 
             // Queremos que ocupe como mucho el 90% del ancho imprimible
             double maxBarcodeWidth = printableWidth * 0.9;

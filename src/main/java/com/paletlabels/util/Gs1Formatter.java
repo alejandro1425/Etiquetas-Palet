@@ -13,14 +13,17 @@ public final class Gs1Formatter {
     private Gs1Formatter() {
     }
 
-    public static String buildGs1Data(Product product, int boxes, String lot, String bestBefore) {
+    public static String buildGs1Data(Product product, double netWeightKg, String lot, String bestBefore) {
         LocalDate date = parseDate(bestBefore);
         String gtin = toGtin14(product.getEan13());
-        int weight = (int) Math.round(product.calculateNetWeightKg(boxes) * 1000); // kilograms to grams for 3 decimals
-        String weightFormatted = String.format("%07d", weight); // 4 integer digits + 3 decimals
+
+        int weight = (int) Math.round(netWeightKg * 1000); // kg -> gramos (3 dec)
+        String weightFormatted = String.format("%07d", weight);
+
         StringBuilder builder = new StringBuilder();
-        builder.append("(01)").append(gtin)
-                .append("(3103)").append(weightFormatted);
+        builder.append("(").append(product.getGtinAi()).append(")").append(gtin)
+           .append("(3103)").append(weightFormatted);
+
         if (date != null) {
             builder.append("(17)").append(date.format(YYMMDD));
         }
@@ -29,6 +32,7 @@ public final class Gs1Formatter {
         }
         return builder.toString();
     }
+
 
     private static LocalDate parseDate(String date) {
         if (date == null || date.isBlank()) {

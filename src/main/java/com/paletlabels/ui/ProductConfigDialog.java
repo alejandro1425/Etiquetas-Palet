@@ -15,10 +15,19 @@ public class ProductConfigDialog extends JDialog {
     public ProductConfigDialog(Window owner, ProductService productService) {
         super(owner, "Configurador de productos", ModalityType.APPLICATION_MODAL);
         this.productService = productService;
-        this.tableModel = new DefaultTableModel(new Object[]{"Nombre", "Unidades/Caja", "Peso unitario (kg)", "EAN13"}, 0) {
+        this.tableModel = new DefaultTableModel(new Object[]{"Nombre", "Unidades/Caja", "Peso unitario (kg)", "EAN13", "Peso variable"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                // Columna "Peso variable" como checkbox
+                if (columnIndex == 4) {
+                    return Boolean.class;
+                }
+                return super.getColumnClass(columnIndex);
             }
         };
         buildUi();
@@ -68,6 +77,7 @@ public class ProductConfigDialog extends JDialog {
         JSpinner unitsField = new JSpinner(new SpinnerNumberModel(product != null ? product.getUnitsPerBox() : 1, 1, 10_000, 1));
         JSpinner weightField = new JSpinner(new SpinnerNumberModel(product != null ? product.getWeightPerUnitKg() : 0.1, 0.001, 9_999.999, 0.001));
         JTextField eanField = new JTextField(product != null ? product.getEan13() : "");
+        JCheckBox variableWeightCheck = new JCheckBox("", product != null && product.isVariableWeight());
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 8, 8));
         panel.add(new JLabel("Nombre"));
@@ -78,10 +88,13 @@ public class ProductConfigDialog extends JDialog {
         panel.add(weightField);
         panel.add(new JLabel("EAN13"));
         panel.add(eanField);
+        panel.add(new JLabel("Peso variable"));
+        panel.add(variableWeightCheck);
 
         int result = JOptionPane.showConfirmDialog(this, panel, product == null ? "Nuevo producto" : "Editar producto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             Product updated = new Product(nameField.getText().trim(), ((Number) unitsField.getValue()).intValue(), ((Number) weightField.getValue()).doubleValue(), eanField.getText().trim());
+            updated.setVariableWeight(variableWeightCheck.isSelected());
             if (index >= 0) {
                 productService.update(index, updated);
             } else {
@@ -95,7 +108,7 @@ public class ProductConfigDialog extends JDialog {
         List<Product> products = productService.getAll();
         tableModel.setRowCount(0);
         for (Product product : products) {
-            tableModel.addRow(new Object[]{product.getName(), product.getUnitsPerBox(), product.getWeightPerUnitKg(), product.getEan13()});
+            tableModel.addRow(new Object[]{product.getName(), product.getUnitsPerBox(), product.getWeightPerUnitKg(), product.getEan13(), product.isVariableWeight()});
         }
     }
 }
