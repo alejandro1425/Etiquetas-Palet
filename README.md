@@ -9,6 +9,9 @@ Aplicación de escritorio en Java para crear etiquetas GS1 en formato A5 para pa
 - Generación del código GS1 en Code 128 listo para imprimir en tamaño A5 mediante el diálogo de impresión del sistema.
 - Configurador de productos para crear, editar o eliminar referencias; los datos se persisten en `~/.palet-labels/products.json`.
 
+## Requisitos
+- Java 17 instalado en el equipo.
+
 ## Ejecución
 1. Compila el proyecto con Maven y genera un JAR autoejecutable con todas las dependencias:
    ```bash
