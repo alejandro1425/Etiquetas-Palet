@@ -17,5 +17,6 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 - Ajustes en la impresión de etiquetas para soportar pesos introducidos manualmente.
 - Mejora en el renderizado del nombre de producto, dividiéndolo en varias líneas si no cabe en el área imprimible.
 
-### Notes
-- 
+### Known Issues
+- Loading `products.json` from versions prior to 1.1.0 may fail if legacy
+  fields are present, causing products to be reset to defaults.
