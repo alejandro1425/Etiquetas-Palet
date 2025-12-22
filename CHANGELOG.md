@@ -20,3 +20,13 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 ### Known Issues
 - Loading `products.json` from versions prior to 1.1.0 may fail if legacy
   fields are present, causing products to be reset to defaults.
+
+
+## [1.1.1] - 2025-12-22
+
+### Added
+- Si un usuario está modificando la tabla de productos, se bloque el archivo para impedir edición simultánea de usuarios.
+
+### Changed
+- Solucionado error de guardado de JSON de versión anterior. Ahora los productos se recuperan al abrir nueva instancia del programa.
+- La ruta de guardado del JSON de productos ahora es la misma en la que se ejecuta el programa (orientado a distribución en red).
