@@ -10,6 +10,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.StandardOpenOption;
+
 public class ProductRepository {
     private final Path storagePath;
     private final ObjectMapper mapper;
@@ -33,9 +38,24 @@ public class ProductRepository {
     }
 
     public void save(List<Product> products) {
-        try {
+    try {
+        if (storagePath.getParent() != null) {
             Files.createDirectories(storagePath.getParent());
-            mapper.writerWithDefaultPrettyPrinter().writeValue(storagePath.toFile(), products);
+        }
+
+        try (FileChannel channel = FileChannel.open(
+                storagePath,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        );
+             FileLock lock = channel.lock()
+        ) {
+            // Escribimos usando el MISMO channel que está bloqueado
+            mapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(Channels.newOutputStream(channel), products);
+        }
+
         } catch (IOException e) {
             throw new RuntimeException("No se pudo guardar productos", e);
         }

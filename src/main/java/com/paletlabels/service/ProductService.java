@@ -2,19 +2,39 @@ package com.paletlabels.service;
 
 import com.paletlabels.model.Product;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import java.net.URISyntaxException;
 
 public class ProductService {
     private final ProductRepository repository;
     private List<Product> cachedProducts;
 
     public ProductService() {
-        this.repository = new ProductRepository(Paths.get(System.getProperty("user.home"), ".palet-labels", "products.json"));
+        Path jarDir = getJarDir();
+        this.repository = new ProductRepository(jarDir.resolve("products.json"));
         this.cachedProducts = new ArrayList<>(repository.load());
+    }
+
+    private static Path getJarDir() {
+    try {
+        return Paths.get(
+                ProductService.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI()
+        ).getParent();
+        } catch (URISyntaxException e) {
+            // Fallback: ruta versiones anteriores (USER_HOME\.palet-labels)
+            return Paths.get(System.getProperty("user.home"), ".palet-labels");
+        }
     }
 
     public List<Product> getAll() {
