@@ -30,3 +30,6 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 ### Changed
 - Solucionado error de guardado de JSON de versión anterior. Ahora los productos se recuperan al abrir nueva instancia del programa.
 - La ruta de guardado del JSON de productos ahora es la misma en la que se ejecuta el programa (orientado a distribución en red).
+
+### Known Issues
+- La tabla de productos de la ventana de configuración de productos no se actualiza si no la vuelves generar (cerrar y volver abrir).
