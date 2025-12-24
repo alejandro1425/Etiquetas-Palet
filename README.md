@@ -5,7 +5,7 @@ Aplicación de escritorio en Java para crear etiquetas GS1 en formato A5 para pa
 ## Características
 - Interfaz Swing para introducir Nº de pedido, cajas, lote y fecha de consumo preferente (dd/MM/yyyy).
 - Selector de producto con EAN13, unidades por caja y peso unitario; cálculo automático de **PESO NETO PALET**.
-- Visualización previa de la cadena GS1 generada con GTIN-14, peso (AI 3103), fecha de caducidad (AI 17) y lote (AI 10).
+- Visualización previa de la cadena GS1 generada con GTIN-14, peso (AI 3103), fecha de consumo preferente (AI 15) y lote (AI 10).
 - Generación del código GS1 en Code 128 listo para imprimir en tamaño A5 mediante el diálogo de impresión del sistema.
 - Configurador de productos para crear, editar o eliminar referencias; los datos se persisten en `~/.palet-labels/products.json`.
 
