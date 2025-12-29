@@ -39,3 +39,13 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Changed
 - Solucionado error de actualización de la tabla de productos en la ventana de configuración de productos.
+
+
+## [1.1.3] - 2025-12-29
+
+### Added
+- Imagen de fondo corporativa.
+- Formateo de fecha (ahora se admite tanto dd/MM/yy como dd/MM/yyyy)
+
+### Changed
+- Formato peso neto: de 0000.000 a X.000

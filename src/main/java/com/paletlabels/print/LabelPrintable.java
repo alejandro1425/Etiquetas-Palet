@@ -83,14 +83,23 @@ public class LabelPrintable implements Printable {
         g2d.setFont(g2d.getFont().deriveFont(Font.PLAIN, 16f));
         g2d.drawString("Nº DE PEDIDO: " + (orderNumber == null ? "" : orderNumber), 0, y);
         y += 25;
+
         g2d.drawString("LOTE: " + lot, 0, y);
         y += 25;
+
         g2d.drawString("CAJAS: " + boxes, 0, y);
         y += 25;
+
         g2d.drawString("FECHA CONSUMO PREFERENTE: " + bestBefore, 0, y);
         y += 25;
-        DecimalFormat weightFormat = new DecimalFormat("0000.000");
-        g2d.drawString("PESO NETO PALET: " + weightFormat.format(netWeight) + " kg", 0, y);
+
+        java.text.DecimalFormatSymbols sym = new java.text.DecimalFormatSymbols(new java.util.Locale("es", "ES"));
+        sym.setDecimalSeparator(',');
+
+        DecimalFormat weightFormat = new DecimalFormat("#0.000", sym);
+        weightFormat.setGroupingUsed(false); // sin miles
+
+        g2d.drawString("PESO NETO PALET: " + weightFormat.format(netWeight) + " KG", 0, y);
         y += 35;
 
         // NOMBRE DE PRODUCTO
