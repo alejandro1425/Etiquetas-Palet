@@ -85,12 +85,16 @@ public class MainFrame extends JFrame {
         c.gridx = 0; c.gridy = row; form.add(new JLabel("LOTE"), c);
         c.gridx = 1; c.gridy = row++; form.add(lotField, c);
 
-        //Fecha caducidad
-        bestBeforeField = new JFormattedTextField(DateTimeFormatter.ofPattern("dd/MM/yy").toFormat());
-        bestBeforeField.setToolTipText("Formato dd/MM/yy");
+        // Fecha consumo preferente
+        bestBeforeField = new JFormattedTextField(new DateCoerceFormatter());
+        bestBeforeField.setColumns(10); // "dd/MM/yyyy"
+        bestBeforeField.setToolTipText("Acepta dd/MM/yy o dd/MM/yyyy (muestra dd/MM/yyyy)");
+        bestBeforeField.setFocusLostBehavior(JFormattedTextField.COMMIT_OR_REVERT);
         bestBeforeField.getDocument().addDocumentListener(SimpleDocumentListener.onChange(this::updateNetWeight));
+
         c.gridx = 0; c.gridy = row; form.add(new JLabel("FECHA CONSUMO PREFERENTE"), c);
         c.gridx = 1; c.gridy = row++; form.add(bestBeforeField, c);
+
 
         //Peso neto si es variable (02)
         netWeightSpinner = new JSpinner(new SpinnerNumberModel(1.000, 0.001, 9999.999, 0.010));
@@ -252,5 +256,37 @@ public class MainFrame extends JFrame {
                 g2d.dispose();
             }
         }
+    }
+
+    //Formateo fecha
+    private static class DateCoerceFormatter extends JFormattedTextField.AbstractFormatter {
+        private static final java.time.format.DateTimeFormatter OUT =
+                java.time.format.DateTimeFormatter.ofPattern("dd/MM/uuuu");
+
+        private static final java.time.format.DateTimeFormatter IN =
+                new java.time.format.DateTimeFormatterBuilder()
+                        .appendPattern("dd/MM/")
+                        // acepta 2 o 4 dígitos y normaliza a 4 al mostrar
+                        .appendValueReduced(java.time.temporal.ChronoField.YEAR, 2, 4, 2000)
+                        .toFormatter();
+
+        @Override
+        public Object stringToValue(String text) throws java.text.ParseException {
+            if (text == null || text.isBlank()) return null;
+            try {
+                return java.time.LocalDate.parse(text.trim(), IN);
+            } catch (Exception e) {
+                throw new java.text.ParseException("Fecha inválida: " + text, 0);
+            }
+        }
+
+        @Override
+        public String valueToString(Object value) throws java.text.ParseException {
+            if (value == null) return "";
+            if (value instanceof java.time.LocalDate ld) {
+                return ld.format(OUT); // SIEMPRE dd/MM/yyyy
+            }
+            throw new java.text.ParseException("Tipo no soportado: " + value.getClass(), 0);
+            }
     }
 }
