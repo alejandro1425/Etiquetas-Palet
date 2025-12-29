@@ -35,7 +35,7 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 - La tabla de productos de la ventana de configuración de productos no se actualiza si no la vuelves generar (cerrar y volver abrir).
 
 
-## [1.1.0] - 2025-12-18
+## [1.1.2] - 2025-12-29
 
 ### Changed
 - Solucionado error de actualización de la tabla de productos en la ventana de configuración de productos.
