@@ -86,14 +86,14 @@ public class MainFrame extends JFrame {
         c.gridx = 1; c.gridy = row++; form.add(lotField, c);
 
         //Fecha caducidad
-        bestBeforeField = new JFormattedTextField(DateTimeFormatter.ofPattern("dd/MM/yyyy").toFormat());
-        bestBeforeField.setToolTipText("Formato dd/MM/yyyy");
+        bestBeforeField = new JFormattedTextField(DateTimeFormatter.ofPattern("dd/MM/yy").toFormat());
+        bestBeforeField.setToolTipText("Formato dd/MM/yy");
         bestBeforeField.getDocument().addDocumentListener(SimpleDocumentListener.onChange(this::updateNetWeight));
         c.gridx = 0; c.gridy = row; form.add(new JLabel("FECHA CONSUMO PREFERENTE"), c);
         c.gridx = 1; c.gridy = row++; form.add(bestBeforeField, c);
 
         //Peso neto si es variable (02)
-        netWeightSpinner = new JSpinner(new SpinnerNumberModel(1.000, 0.001, 9999.999, 0.001));
+        netWeightSpinner = new JSpinner(new SpinnerNumberModel(1.000, 0.001, 9999.999, 0.010));
         netWeightSpinner.addChangeListener(e -> updateNetWeight());
 
         netWeightPanel = new JPanel(new BorderLayout(8, 0));
@@ -135,6 +135,13 @@ public class MainFrame extends JFrame {
         container.add(buttons, BorderLayout.SOUTH);
 
         setContentPane(container);
+
+        //Transparentamos interfaz para ver fondo
+        form.setOpaque(false);
+        buttons.setOpaque(false);
+
+        gs1Preview.setOpaque(false);
+        gs1Preview.setBackground(new Color(255, 255, 255, 0)); // transparente
     }
 
     private void updateNetWeight() {
@@ -240,7 +247,7 @@ public class MainFrame extends JFrame {
             super.paintComponent(g);
             if (background != null) {
                 Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.12f));
+                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
                 g2d.drawImage(background, 0, 0, getWidth(), getHeight(), this);
                 g2d.dispose();
             }
