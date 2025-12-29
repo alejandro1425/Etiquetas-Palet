@@ -1,5 +1,6 @@
 package com.paletlabels.service;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.paletlabels.model.Product;
@@ -48,12 +49,17 @@ public class ProductRepository {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.WRITE,
                 StandardOpenOption.TRUNCATE_EXISTING
-        );
+                );
              FileLock lock = channel.lock()
-        ) {
-            // Escribimos usando el MISMO channel que está bloqueado
-            mapper.writerWithDefaultPrettyPrinter()
-                    .writeValue(Channels.newOutputStream(channel), products);
+            ) {
+                JsonGenerator gen = mapper.getFactory()
+                        .createGenerator(Channels.newOutputStream(channel));
+                gen.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+
+                mapper.writerWithDefaultPrettyPrinter()
+                        .writeValue(gen, products);
+
+                gen.flush();
         }
 
         } catch (IOException e) {

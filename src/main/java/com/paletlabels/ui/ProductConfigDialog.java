@@ -11,11 +11,16 @@ import java.util.List;
 public class ProductConfigDialog extends JDialog {
     private final ProductService productService;
     private final DefaultTableModel tableModel;
+    private JTable table;
+    private static final Object[] COLS = new Object[]{
+        "Nombre", "Unidades/Caja", "Peso unitario (kg)", "EAN14", "Peso variable"
+    };
+
 
     public ProductConfigDialog(Window owner, ProductService productService) {
         super(owner, "Configurador de productos", ModalityType.APPLICATION_MODAL);
         this.productService = productService;
-        this.tableModel = new DefaultTableModel(new Object[]{"Nombre", "Unidades/Caja", "Peso unitario (kg)", "EAN13", "Peso variable"}, 0) {
+        this.tableModel = new DefaultTableModel(COLS, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -23,11 +28,7 @@ public class ProductConfigDialog extends JDialog {
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                // Columna "Peso variable" como checkbox
-                if (columnIndex == 4) {
-                    return Boolean.class;
-                }
-                return super.getColumnClass(columnIndex);
+                return columnIndex == 4 ? Boolean.class : super.getColumnClass(columnIndex);
             }
         };
         buildUi();
@@ -38,7 +39,7 @@ public class ProductConfigDialog extends JDialog {
 
     private void buildUi() {
         setLayout(new BorderLayout());
-        JTable table = new JTable(tableModel);
+        table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -60,7 +61,7 @@ public class ProductConfigDialog extends JDialog {
                 int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar el producto seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     productService.delete(selected);
-                    loadData();
+                    SwingUtilities.invokeLater(this::loadData);
                 }
             }
         });
@@ -86,7 +87,7 @@ public class ProductConfigDialog extends JDialog {
         panel.add(unitsField);
         panel.add(new JLabel("Peso unitario (kg)"));
         panel.add(weightField);
-        panel.add(new JLabel("EAN13"));
+        panel.add(new JLabel("EAN14"));
         panel.add(eanField);
         panel.add(new JLabel("Peso variable"));
         panel.add(variableWeightCheck);
@@ -100,15 +101,30 @@ public class ProductConfigDialog extends JDialog {
             } else {
                 productService.add(updated);
             }
-            loadData();
+            SwingUtilities.invokeLater(this::loadData);
         }
     }
 
     private void loadData() {
         List<Product> products = productService.getAll();
+
         tableModel.setRowCount(0);
-        for (Product product : products) {
-            tableModel.addRow(new Object[]{product.getName(), product.getUnitsPerBox(), product.getWeightPerUnitKg(), product.getEan13(), product.isVariableWeight()});
+        for (Product p : products) {
+            tableModel.addRow(new Object[]{
+                p.getName(),
+                p.getUnitsPerBox(),
+                p.getWeightPerUnitKg(),
+                p.getEan13(),
+                p.isVariableWeight()
+            });
+        }
+
+        // Fuerza a JTable a "reenganchar" el modelo y reconstruir vista
+        if (table != null) {
+            table.setModel(tableModel);
+            table.revalidate();
+            table.repaint();
         }
     }
+
 }

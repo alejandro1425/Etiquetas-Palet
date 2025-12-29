@@ -25,7 +25,7 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 ## [1.1.1] - 2025-12-22
 
 ### Added
-- Si un usuario está modificando la tabla de productos, se bloque el archivo para impedir edición simultánea de usuarios.
+- Si un usuario está modificando la tabla de productos, se bloquea el archivo para impedir edición simultánea de usuarios.
 
 ### Changed
 - Solucionado error de guardado de JSON de versión anterior. Ahora los productos se recuperan al abrir nueva instancia del programa.
@@ -33,3 +33,9 @@ y este proyecto usa [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Known Issues
 - La tabla de productos de la ventana de configuración de productos no se actualiza si no la vuelves generar (cerrar y volver abrir).
+
+
+## [1.1.0] - 2025-12-18
+
+### Changed
+- Solucionado error de actualización de la tabla de productos en la ventana de configuración de productos.
